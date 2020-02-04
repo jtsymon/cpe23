@@ -125,6 +125,32 @@ class CPE
     CPE.match?(self, other)
   end
 
+  def to_wfn
+    attrs = %i[part vendor product version update edition language sw_edition
+               target_sw target_hw other].map do |key|
+      value = send(key)
+      str = case value
+            when nil then 'NA'
+            when '*' then 'ANY'
+            else "\"#{value.downcase}\""
+            end
+      "#{key}=#{str}"
+    end
+    "wfn:[#{attrs.join(',')}]"
+  end
+
+  def to_uri
+    fields = [@part, @vendor, @product, @version, @update, @edition, @language]
+    # Strip trailing empty fields
+    fields = fields[0...-1] while fields.any? && fields[-1].nil?
+    'cpe:/' + fields.join(':').downcase
+  end
+
+  def to_str
+    ['cpe', '2.3', @part, @vendor, @product, @version, @update, @edition,
+     @language, @sw_edition, @target_sw, @target_hw, @other].join(':').downcase
+  end
+
   class << self
     def parse(str)
       if str.start_with? 'wfn:'

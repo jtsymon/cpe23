@@ -66,4 +66,25 @@ class CpeTest < Minitest::Test
     obj = CPE.parse('cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*')
     assert obj.match? wildcard
   end
+
+  def test_to_str_roundtrip
+    str = 'cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*'
+    obj = CPE.parse(str)
+    assert_equal str, obj.to_str
+  end
+
+  def test_to_uri_roundtrip
+    str = 'cpe:/a:microsoft:internet_explorer:8.%02:sp%01'
+    obj = CPE.parse(str)
+    assert_equal str, obj.to_uri
+  end
+
+  def test_to_wfn_roundtrip
+    # WFN encoding encodes missing attributes as NA, since we don't know whether
+    # they were originally provided as NA or missing.
+    # This means the test needs to expect all attributes.
+    str = 'wfn:[part="a",vendor="microsoft",product="internet_explorer",version="8.0.6001",update="beta",edition=NA,language=NA,sw_edition=NA,target_sw=NA,target_hw=NA,other=NA]'
+    obj = CPE.parse(str)
+    assert_equal str, obj.to_wfn
+  end
 end
