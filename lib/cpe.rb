@@ -135,7 +135,12 @@ class CPE
         if (str = val.capture(:string))
           str.capture(:content).value
         else
-          val.value
+          # Translate WFN special values (only applies to non-string)
+          case (str = val.value)
+          when 'ANY' then '*'
+          when 'NA' then nil
+          else str
+          end
         end
       end
       if data.include? key

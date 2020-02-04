@@ -44,6 +44,6 @@ class CpeTest < Minitest::Test
     assert_equal obj.product, 'internet_explorer'
     assert_equal obj.version, '8.0.6001'
     assert_equal obj.update, 'beta'
-    assert_equal obj.edition, 'NA'
+    assert_nil obj.edition
   end
 end
