@@ -1,6 +1,6 @@
 grammar WFN
   rule wfn
-    '[' space (attr (space ',' space attr)*)? space ']'
+    'wfn:[' space (attr (space ',' space attr)*)? space ']'
   end
 
   rule attr

@@ -189,14 +189,8 @@ class CPE
     end
 
     def parse_wfn(str)
-      tag, body = str.split(':', 2)
-
-      unless tag == 'wfn' && body.start_with?('[') && body.end_with?(']')
-        raise ArgumentError, 'Not a CPE WFN'
-      end
-
       data = {}
-      WFN.parse(body)[:attr].each do |attr|
+      WFN.parse(str)[:attr].each do |attr|
         key = attr.capture(:symbol).value.to_sym
         value = attr.capture(:value).then do |val|
           if (str = val.capture(:string))
