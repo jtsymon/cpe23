@@ -121,83 +121,108 @@ class CPE
     @other = other
   end
 
-  def self.parse_wfn(str)
-    tag, body = str.split(':', 2)
+  def match?(other)
+    CPE.match?(self, other)
+  end
 
-    unless tag == 'wfn' && body.start_with?('[') && body.end_with?(']')
-      raise ArgumentError, 'Not a CPE WFN'
+  class << self
+    def parse(str)
+      if str.start_with? 'wfn:'
+        parse_wfn(str)
+      elsif str.start_with? 'cpe:/'
+        parse_uri(str)
+      elsif str.start_with? 'cpe:2.3:'
+        parse_str(str)
+      else
+        raise ArgumentError, 'CPE malformed'
+      end
     end
 
-    data = {}
-    WFN.parse(body)[:attr].each do |attr|
-      key = attr.capture(:symbol).value.to_sym
-      value = attr.capture(:value).then do |val|
-        if (str = val.capture(:string))
-          str.capture(:content).value
-        else
-          # Translate WFN special values (only applies to non-string)
-          case (str = val.value)
-          when 'ANY' then '*'
-          when 'NA' then nil
-          else str
+    def match?(first, second)
+      attr_match?(first.part, second.part) &&
+        attr_match?(first.vendor, second.vendor) &&
+        attr_match?(first.product, second.product) &&
+        attr_match?(first.version, second.version) &&
+        attr_match?(first.update, second.update) &&
+        attr_match?(first.edition, second.edition) &&
+        attr_match?(first.language, second.language) &&
+        attr_match?(first.target_sw, second.target_sw) &&
+        attr_match?(first.target_hw, second.target_hw) &&
+        attr_match?(first.other, second.other)
+    end
+
+    private
+
+    def attr_match?(first, second)
+      first == '*' || second == '*' || first == second
+    end
+
+    def parse_wfn(str)
+      tag, body = str.split(':', 2)
+
+      unless tag == 'wfn' && body.start_with?('[') && body.end_with?(']')
+        raise ArgumentError, 'Not a CPE WFN'
+      end
+
+      data = {}
+      WFN.parse(body)[:attr].each do |attr|
+        key = attr.capture(:symbol).value.to_sym
+        value = attr.capture(:value).then do |val|
+          if (str = val.capture(:string))
+            str.capture(:content).value
+          else
+            # Translate WFN special values (only applies to non-string)
+            case (str = val.value)
+            when 'ANY' then '*'
+            when 'NA' then nil
+            else str
+            end
           end
         end
+        if data.include? key
+          raise ArgumentError, 'Attribute defined multiple times'
+        end
+
+        data[key] = value
       end
-      if data.include? key
-        raise ArgumentError, 'Attribute defined multiple times'
+
+      new(**data)
+    end
+
+    def parse_uri(str)
+      tag, slash, *attr = str.split(':')
+      raise ArgumentError, 'Not a CPE URI' unless tag == 'cpe' && slash == '/'
+
+      data = {}
+      data[:part], data[:vendor], data[:product], data[:version], data[:update],
+        data[:edition], data[:language], remainder = attr
+
+      raise ArgumentError, 'CPE URI malformed' unless remainder.nil?
+
+      # All attributes are optional.
+      # Remove null attributes to avoid confusing the constructor.
+      data.reject! { |_k, v| v.nil? }
+
+      new(**data)
+    end
+
+    def parse_str(str)
+      tag, cpe_version, *attr = str.split(':')
+      unless tag == 'cpe' && cpe_version == '2.3'
+        raise ArgumentError, 'Not a CPE formatted string'
       end
 
-      data[key] = value
-    end
+      data = {}
+      data[:part], data[:vendor], data[:product], data[:version],
+        data[:update], data[:edition], data[:language], data[:sw_edition],
+        data[:target_sw], data[:target_hw], data[:other], remainder = attr
 
-    new(**data)
-  end
+      # All attributes MUST appear
+      if data.any? { |_k, v| v.nil? } || !remainder.nil?
+        raise ArgumentError, 'CPE formatted string malformed'
+      end
 
-  def self.parse_uri(str)
-    tag, slash, *attr = str.split(':')
-    raise ArgumentError, 'Not a CPE URI' unless tag == 'cpe' && slash == '/'
-
-    data = {}
-    data[:part], data[:vendor], data[:product], data[:version], data[:update],
-      data[:edition], data[:language], remainder = attr
-
-    raise ArgumentError, 'CPE URI malformed' unless remainder.nil?
-
-    # All attributes are optional.
-    # Remove null attributes to avoid confusing the constructor.
-    data.reject! { |_k, v| v.nil? }
-
-    new(**data)
-  end
-
-  def self.parse_str(str)
-    tag, cpe_version, *attr = str.split(':')
-    unless tag == 'cpe' && cpe_version == '2.3'
-      raise ArgumentError, 'Not a CPE formatted string'
-    end
-
-    data = {}
-    data[:part], data[:vendor], data[:product], data[:version],
-      data[:update], data[:edition], data[:language], data[:sw_edition],
-      data[:target_sw], data[:target_hw], data[:other], remainder = attr
-
-    # All attributes MUST appear
-    if data.any? { |_k, v| v.nil? } || !remainder.nil?
-      raise ArgumentError, 'CPE formatted string malformed'
-    end
-
-    new(**data)
-  end
-
-  def self.parse(str)
-    if str.start_with? 'wfn:'
-      parse_wfn(str)
-    elsif str.start_with? 'cpe:/'
-      parse_uri(str)
-    elsif str.start_with? 'cpe:2.3:'
-      parse_str(str)
-    else
-      raise ArgumentError, 'CPE malformed'
+      new(**data)
     end
   end
 end

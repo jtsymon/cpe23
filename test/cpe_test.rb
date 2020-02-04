@@ -46,4 +46,16 @@ class CpeTest < Minitest::Test
     assert_equal obj.update, 'beta'
     assert_nil obj.edition
   end
+
+  def test_wildcard_matches_everything
+    wildcard = CPE.parse('cpe:2.3:*:*:*:*:*:*:*:*:*:*:*')
+    obj = CPE.parse('cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*')
+    assert wildcard.match? obj
+  end
+
+  def test_everything_matches_wildcard
+    wildcard = CPE.parse('cpe:2.3:*:*:*:*:*:*:*:*:*:*:*')
+    obj = CPE.parse('cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*')
+    assert obj.match? wildcard
+  end
 end
