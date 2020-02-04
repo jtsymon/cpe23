@@ -1,6 +1,6 @@
 grammar CPE23
   rule cpe23
-    'cpe:2.3:' attr (':' attr) 10*10
+    'cpe:2.3' (':' attr) 11*11
   end
 
   rule escaped
