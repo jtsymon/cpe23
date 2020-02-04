@@ -8,6 +8,6 @@ grammar CPE23
   end
 
   rule attr
-    (/[^:]/ | escaped)*
+    (escaped | /[^:]/)*
   end
 end

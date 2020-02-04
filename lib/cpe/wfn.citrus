@@ -16,7 +16,7 @@ grammar WFN
   end
 
   rule content
-    (/[^"]/ | escaped)*
+    (escaped | /[^"]/)*
   end
 
   rule string
