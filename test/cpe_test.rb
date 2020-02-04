@@ -38,7 +38,13 @@ class CpeTest < Minitest::Test
   end
 
   def test_it_parses_uri
-    CPE.parse('cpe:/a:microsoft:internet_explorer:8.%02:sp%01')
+    obj = CPE.parse('cpe:/a:microsoft:internet_explorer:8.%02:sp%01')
+    assert_equal obj.part, 'a'
+    assert_equal obj.vendor, 'microsoft'
+    assert_equal obj.product, 'internet_explorer'
+    assert_equal obj.version, '8.*'
+    assert_equal obj.update, 'sp?'
+    assert_nil obj.edition
   end
 
   def test_it_parses_empty_wfn

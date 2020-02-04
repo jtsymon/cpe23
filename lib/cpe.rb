@@ -143,6 +143,10 @@ class CPE
     fields = [@part, @vendor, @product, @version, @update, @edition, @language]
     # Strip trailing empty fields
     fields = fields[0...-1] while fields.any? && fields[-1].nil?
+    fields.map! do |f|
+      f.sub('?', '%01')
+       .sub('*', '%02')
+    end
     'cpe:/' + fields.join(':').downcase
   end
 
@@ -218,6 +222,9 @@ class CPE
     def parse_uri(str)
       tag, body = str.split(':/', 2)
       raise ArgumentError, 'Not a CPE URI' if tag != 'cpe' || body.nil?
+
+      body.sub!('%01', '?')
+      body.sub!('%02', '*')
 
       data = {}
       data[:part], data[:vendor], data[:product], data[:version], data[:update],
