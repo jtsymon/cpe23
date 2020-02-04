@@ -7,6 +7,10 @@ class CpeTest < Minitest::Test
     refute_nil ::Cpe::VERSION
   end
 
+  def test_it_parses_empty_formatted_string
+    CPE.parse('cpe:2.3:*:*:*:*:*:*:*:*:*:*:*')
+  end
+
   def test_it_parses_formatted_string
     obj = CPE.parse('cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*')
     assert_equal obj.part, 'a'
