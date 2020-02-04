@@ -105,9 +105,9 @@ class CPE
   # value of the attribute.
   attr_accessor :other
 
-  def initialize(part: '', vendor: '', product: '', version: '', update: '',
-                 edition: '', language: '', sw_edition: '', target_sw: '',
-                 target_hw: '', other: '')
+  def initialize(part: nil, vendor: nil, product: nil, version: nil,
+                 update: nil, edition: nil, language: nil, sw_edition: nil,
+                 target_sw: nil, target_hw: nil, other: nil)
     @part = part
     @vendor = vendor
     @product = product
@@ -200,9 +200,6 @@ class CPE
       raise ArgumentError, 'CPE URI malformed' unless remainder.nil?
 
       # All attributes are optional.
-      # Remove null attributes to avoid confusing the constructor.
-      data.reject! { |_k, v| v.nil? }
-
       new(**data)
     end
 
@@ -221,6 +218,9 @@ class CPE
       if data.any? { |_k, v| v.nil? } || !remainder.nil?
         raise ArgumentError, 'CPE formatted string malformed'
       end
+
+      # Remove empty attributes to avoid confusing the constructor
+      data.reject! { |_k, v| v.empty? }
 
       new(**data)
     end
