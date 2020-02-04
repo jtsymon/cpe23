@@ -22,13 +22,13 @@ class CpeTest < Minitest::Test
   end
 
   def test_it_fails_on_too_many_attributes
-    assert_raises(ArgumentError) do
+    assert_raises(Citrus::ParseError) do
       CPE.parse('cpe:2.3:*:*:*:*:*:*:*:*:*:*:*:*')
     end
   end
 
   def test_it_fails_on_too_few_attributes
-    assert_raises(ArgumentError) do
+    assert_raises(Citrus::ParseError) do
       CPE.parse('cpe:2.3:*:*:*:*:*:*:*:*:*:*')
     end
   end

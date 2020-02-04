@@ -1,0 +1,13 @@
+grammar CPE23
+  rule cpe23
+    'cpe:2.3:' attr (':' attr) 10*10
+  end
+
+  rule escaped
+    '\\' .
+  end
+
+  rule attr
+    (/[^:]/ | escaped)*
+  end
+end

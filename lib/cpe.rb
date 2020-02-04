@@ -5,6 +5,7 @@ require 'pry'
 require 'citrus'
 
 Citrus.load(File.expand_path('cpe/wfn', File.dirname(__FILE__)))
+Citrus.load(File.expand_path('cpe/cpe23', File.dirname(__FILE__)))
 
 # Implementation of CPE 2.3: https://cpe.mitre.org/specification
 class CPE
@@ -237,11 +238,7 @@ class CPE
     end
 
     def parse_str(str)
-      tag, cpe_version, *attr = str.split(':')
-      unless tag == 'cpe' && cpe_version == '2.3'
-        raise ArgumentError, 'Not a CPE formatted string'
-      end
-
+      attr = CPE23.parse(str)[:attr].map(&:value)
       data = {}
       data[:part], data[:vendor], data[:product], data[:version],
         data[:update], data[:edition], data[:language], data[:sw_edition],
