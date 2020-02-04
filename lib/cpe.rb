@@ -190,12 +190,12 @@ class CPE
     end
 
     def parse_uri(str)
-      tag, slash, *attr = str.split(':')
-      raise ArgumentError, 'Not a CPE URI' unless tag == 'cpe' && slash == '/'
+      tag, body = str.split(':/', 2)
+      raise ArgumentError, 'Not a CPE URI' if tag != 'cpe' || body.nil?
 
       data = {}
       data[:part], data[:vendor], data[:product], data[:version], data[:update],
-        data[:edition], data[:language], remainder = attr
+        data[:edition], data[:language], remainder = body.split(':')
 
       raise ArgumentError, 'CPE URI malformed' unless remainder.nil?
 

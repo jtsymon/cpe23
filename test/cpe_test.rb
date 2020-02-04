@@ -33,6 +33,10 @@ class CpeTest < Minitest::Test
     CPE.parse('cpe:/')
   end
 
+  def test_it_parses_uri
+    CPE.parse('cpe:/a:microsoft:internet_explorer:8.%02:sp%01')
+  end
+
   def test_it_parses_empty_wfn
     CPE.parse('wfn:[]')
   end
