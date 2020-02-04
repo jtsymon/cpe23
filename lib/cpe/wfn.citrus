@@ -1,0 +1,33 @@
+grammar WFN
+  rule wfn
+    '[' space (attr (space ',' space attr)*)? space ']'
+  end
+
+  rule attr
+    symbol space '=' space value
+  end
+
+  rule symbol
+    [a-zA-Z0-9]*
+  end
+
+  rule escaped
+    '\\' .
+  end
+
+  rule content
+    (/[^"]/ | escaped)*
+  end
+
+  rule string
+    '"' content '"'
+  end
+
+  rule value
+    string | symbol
+  end
+
+  rule space
+    [ \t]*
+  end
+end
