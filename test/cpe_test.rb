@@ -2,6 +2,8 @@
 
 require 'test_helper'
 
+PERF_TEST = ENV['PERF_TEST']
+
 class CpeTest < Minitest::Test
   def test_that_it_has_a_version_number
     refute_nil ::Cpe::VERSION
@@ -22,13 +24,13 @@ class CpeTest < Minitest::Test
   end
 
   def test_it_fails_on_too_many_attributes
-    assert_raises(Citrus::ParseError) do
+    assert_raises do
       CPE.parse('cpe:2.3:*:*:*:*:*:*:*:*:*:*:*:*')
     end
   end
 
   def test_it_fails_on_too_few_attributes
-    assert_raises(Citrus::ParseError) do
+    assert_raises do
       CPE.parse('cpe:2.3:*:*:*:*:*:*:*:*:*:*')
     end
   end
@@ -92,5 +94,14 @@ class CpeTest < Minitest::Test
     str = 'wfn:[part="a",vendor="microsoft",product="internet_explorer",version="8.0.6001",update="beta",edition=NA,language=NA,sw_edition=NA,target_sw=NA,target_hw=NA,other=NA]'
     obj = CPE.parse(str)
     assert_equal str, obj.to_wfn
+  end
+
+  def test_cpe23_parsing_speed
+    skip unless PERF_TEST
+    start = Time.now
+    10_000.times do
+      CPE.parse('cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*')
+    end
+    puts Time.now - start
   end
 end

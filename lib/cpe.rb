@@ -231,8 +231,32 @@ class CPE
       new(**data)
     end
 
+    # Faster implementation of CPE parser... Citrus is not fast :(
+    def parse_cpe23(str)
+      raise ArgumentError, 'Not a CPE str' unless str.start_with?('cpe:2.3')
+
+      index = 7
+      size = str.size
+      char = str[index]
+      attr = 11.times.map do
+        raise ArgumentError, 'CPE formatted string malformed' if char != ':'
+
+        index += 1
+        attr_index = index
+        until index >= size || (char = str[index]) == ':'
+          index += 1
+          index += 1 if char == '\\' # Skip escaped characters
+        end
+        str[attr_index...index]
+      end
+      raise ArgumentError, 'CPE formatted string malformed' if index != size
+
+      attr
+    end
+
     def parse_str(str)
-      attr = CPE23.parse(str)[:attr].map(&:value)
+      # attr = CPE23.parse(str)[:attr].map(&:value)
+      attr = parse_cpe23(str)
       data = {}
       data[:part], data[:vendor], data[:product], data[:version],
         data[:update], data[:edition], data[:language], data[:sw_edition],
