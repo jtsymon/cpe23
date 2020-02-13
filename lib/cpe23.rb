@@ -2,7 +2,6 @@
 
 require 'cpe23/version'
 require 'cpe23/version_wildcard'
-require 'pry'
 require 'citrus'
 
 Citrus.load(File.expand_path('cpe23/wfn', File.dirname(__FILE__)))
