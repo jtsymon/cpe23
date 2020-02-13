@@ -16,7 +16,13 @@ module Cpe
     end
 
     def <=>(other)
-      other = Version.new(other) unless other.is_a? Version
+      unless other.is_a? Version
+        begin
+          other = Version.new(other)
+        rescue StandardError
+          return nil
+        end
+      end
       @parts.zip(other.parts).each do |a, b|
         break if a == '*' || b == '*'
 
