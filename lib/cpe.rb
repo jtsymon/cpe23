@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cpe/version'
+require 'cpe/version_wildcard'
 require 'pry'
 require 'citrus'
 
