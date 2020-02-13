@@ -10,6 +10,7 @@ Citrus.load(File.expand_path('cpe/cpe23', File.dirname(__FILE__)))
 
 # Implementation of CPE 2.3: https://cpe.mitre.org/specification
 class CPE
+  include Comparable
   # The part attribute SHALL have one of these three string values:
   # The value "a", when the WFN is for a class of applications.
   # The value "o", when the WFN is for a class of operating systems.
@@ -39,7 +40,13 @@ class CPE
   # NOT be truncated or otherwise modified. Any character string meeting the
   # requirements for WFNs (cf. 5.3.2) MAY be specified as the value of the
   # attribute.
-  attr_accessor :version
+  def version_raw
+    @version
+  end
+
+  def version
+    Cpe::Version.new(@version)
+  end
 
   # Values for this attribute SHOULD be vendor-specific alphanumeric strings
   # characterizing the particular update, service pack, or point release of the
@@ -123,14 +130,32 @@ class CPE
     @other = other
   end
 
-  def match?(other)
-    CPE.match?(self, other)
+  def <=>(other)
+    unless other.is_a? CPE
+      begin
+        other = CPE.parse(other)
+      rescue StandardError
+        return nil
+      end
+    end
+    return nil unless
+      CPE.attr_match?(part, other.part) &&
+      CPE.attr_match?(vendor, other.vendor) &&
+      CPE.attr_match?(product, other.product) &&
+      CPE.attr_match?(update, other.update) &&
+      CPE.attr_match?(edition, other.edition) &&
+      CPE.attr_match?(language, other.language) &&
+      CPE.attr_match?(target_sw, other.target_sw) &&
+      CPE.attr_match?(target_hw, other.target_hw) &&
+      CPE.attr_match?(self.other, other.other)
+
+    version <=> other.version
   end
 
   def to_wfn
     attrs = %i[part vendor product version update edition language sw_edition
                target_sw target_hw other].map do |key|
-      value = send(key)
+      value = instance_variable_get("@#{key}")
       str = case value
             when nil then 'NA'
             when '*' then 'ANY'
@@ -172,24 +197,11 @@ class CPE
       end
     end
 
-    def match?(first, second)
-      attr_match?(first.part, second.part) &&
-        attr_match?(first.vendor, second.vendor) &&
-        attr_match?(first.product, second.product) &&
-        attr_match?(first.version, second.version) &&
-        attr_match?(first.update, second.update) &&
-        attr_match?(first.edition, second.edition) &&
-        attr_match?(first.language, second.language) &&
-        attr_match?(first.target_sw, second.target_sw) &&
-        attr_match?(first.target_hw, second.target_hw) &&
-        attr_match?(first.other, second.other)
-    end
-
-    private
-
     def attr_match?(first, second)
       first == '*' || second == '*' || first == second
     end
+
+    private
 
     def parse_wfn(str)
       data = {}

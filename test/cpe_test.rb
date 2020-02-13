@@ -66,13 +66,13 @@ class CpeTest < Minitest::Test
   def test_wildcard_matches_everything
     wildcard = CPE.parse('cpe:2.3:*:*:*:*:*:*:*:*:*:*:*')
     obj = CPE.parse('cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*')
-    assert wildcard.match? obj
+    assert_equal wildcard, obj
   end
 
   def test_everything_matches_wildcard
     wildcard = CPE.parse('cpe:2.3:*:*:*:*:*:*:*:*:*:*:*')
     obj = CPE.parse('cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*')
-    assert obj.match? wildcard
+    assert_equal obj, wildcard
   end
 
   def test_to_str_roundtrip
@@ -103,5 +103,40 @@ class CpeTest < Minitest::Test
       CPE.parse('cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*')
     end
     puts Time.now - start
+  end
+
+  def test_it_matches_itself
+    cpe = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*'
+    assert_equal cpe, cpe
+  end
+
+  def test_cpe_version_mismatch
+    a = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*'
+    b = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:9.0.0:beta:*:*:*:*:*:*'
+    refute_equal a, b
+  end
+
+  def test_cpe_version_left_wildcard
+    a = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:8.0.*:beta:*:*:*:*:*:*'
+    b = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*'
+    assert_equal a, b
+  end
+
+  def test_cpe_version_right_wildcard
+    a = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:8.0.*:beta:*:*:*:*:*:*'
+    b = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*'
+    assert_equal b, a
+  end
+
+  def test_cpe_version_less_than
+    a = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*'
+    b = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:9.0.0:beta:*:*:*:*:*:*'
+    assert_operator a, :<, b
+  end
+
+  def test_cpe_version_greater_than
+    a = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*'
+    b = CPE.parse 'cpe:2.3:a:microsoft:internet_explorer:9.0.0:beta:*:*:*:*:*:*'
+    assert_operator b, :>, a
   end
 end
