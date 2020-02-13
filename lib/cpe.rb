@@ -157,6 +157,8 @@ class CPE
      @language, @sw_edition, @target_sw, @target_hw, @other].join(':').downcase
   end
 
+  alias to_s to_str
+
   class << self
     def parse(str)
       if str.start_with? 'wfn:'
