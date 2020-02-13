@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Cpe
+class Cpe23
   class Version
     include Comparable
     attr_reader :parts

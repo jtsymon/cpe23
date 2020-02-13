@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require 'cpe/version'
-require 'cpe/version_wildcard'
+require 'cpe23/version'
+require 'cpe23/version_wildcard'
 require 'pry'
 require 'citrus'
 
-Citrus.load(File.expand_path('cpe/wfn', File.dirname(__FILE__)))
-Citrus.load(File.expand_path('cpe/cpe23', File.dirname(__FILE__)))
+Citrus.load(File.expand_path('cpe23/wfn', File.dirname(__FILE__)))
+Citrus.load(File.expand_path('cpe23/cpe23', File.dirname(__FILE__)))
 
 # Implementation of CPE 2.3: https://cpe.mitre.org/specification
-class CPE
+class Cpe23
   include Comparable
   # The part attribute SHALL have one of these three string values:
   # The value "a", when the WFN is for a class of applications.
@@ -45,7 +45,7 @@ class CPE
   end
 
   def version
-    Cpe::Version.new(@version)
+    Cpe23::Version.new(@version)
   end
 
   # Values for this attribute SHOULD be vendor-specific alphanumeric strings
@@ -131,23 +131,23 @@ class CPE
   end
 
   def <=>(other)
-    unless other.is_a? CPE
+    unless other.is_a? Cpe23
       begin
-        other = CPE.parse(other)
+        other = Cpe23.parse(other)
       rescue StandardError
         return nil
       end
     end
     return nil unless
-      CPE.attr_match?(part, other.part) &&
-      CPE.attr_match?(vendor, other.vendor) &&
-      CPE.attr_match?(product, other.product) &&
-      CPE.attr_match?(update, other.update) &&
-      CPE.attr_match?(edition, other.edition) &&
-      CPE.attr_match?(language, other.language) &&
-      CPE.attr_match?(target_sw, other.target_sw) &&
-      CPE.attr_match?(target_hw, other.target_hw) &&
-      CPE.attr_match?(self.other, other.other)
+      Cpe23.attr_match?(part, other.part) &&
+      Cpe23.attr_match?(vendor, other.vendor) &&
+      Cpe23.attr_match?(product, other.product) &&
+      Cpe23.attr_match?(update, other.update) &&
+      Cpe23.attr_match?(edition, other.edition) &&
+      Cpe23.attr_match?(language, other.language) &&
+      Cpe23.attr_match?(target_sw, other.target_sw) &&
+      Cpe23.attr_match?(target_hw, other.target_hw) &&
+      Cpe23.attr_match?(self.other, other.other)
 
     version <=> other.version
   end
@@ -270,7 +270,7 @@ class CPE
     end
 
     def parse_str(str)
-      # attr = CPE23.parse(str)[:attr].map(&:value)
+      # attr = Cpe23.parse(str)[:attr].map(&:value)
       attr = parse_cpe23(str)
       data = {}
       data[:part], data[:vendor], data[:product], data[:version],

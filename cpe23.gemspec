@@ -1,14 +1,14 @@
-require_relative 'lib/cpe/version'
+require_relative 'lib/cpe23/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "cpe"
-  spec.version       = Cpe::VERSION
+  spec.name          = "cpe23"
+  spec.version       = Cpe23::VERSION
   spec.authors       = ["Jeremy Symon"]
   spec.email         = ["jtsymon@gmail.com"]
 
   spec.summary       = %q{CPE parser/generator/matcher}
   spec.description   = %q{Library for parsing, generating, and matching CPEs}
-  spec.homepage      = "https://github.com/jtsymon/libcpe"
+  spec.homepage      = "https://github.com/jtsymon/cpe23"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
