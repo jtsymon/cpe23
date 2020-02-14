@@ -47,9 +47,7 @@ class Cpe23
     Cpe23::Version.new(@version)
   end
 
-  def version=(val)
-    @version = val
-  end
+  attr_writer :version
 
   # Values for this attribute SHOULD be vendor-specific alphanumeric strings
   # characterizing the particular update, service pack, or point release of the
