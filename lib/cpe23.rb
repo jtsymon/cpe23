@@ -47,6 +47,10 @@ class Cpe23
     Cpe23::Version.new(@version)
   end
 
+  def version=(val)
+    @version = val
+  end
+
   # Values for this attribute SHOULD be vendor-specific alphanumeric strings
   # characterizing the particular update, service pack, or point release of the
   # product.Values for this attribute SHOULD be selected from an
