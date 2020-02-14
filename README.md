@@ -1,15 +1,13 @@
-# Cpe
+# Cpe23
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/cpe`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Parse and serialise CPEs in CPE23, URI, and WFN formats.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'cpe'
+gem 'cpe23'
 ```
 
 And then execute:
@@ -18,22 +16,36 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install cpe
+    $ gem install cpe23
 
 ## Usage
 
-TODO: Write usage instructions here
+Parse a CPE in CPE23, URI, or WFN format:
+``` ruby
+Cpe23.parse(string)
+```
+
+Serialise a CPE:
+``` ruby
+cpe.to_str
+cpe.to_uri
+cpe.to_wfn
+```
+
+Compare two CPEs:
+ - all non-wildcard components must match
+ - version compares the least specific of the two CPEs
+ - CPEs that differ only in version are ordered by their version
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bundle install` to install dependencies. Then, run `rake test` to run the tests.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/cpe.
-
+Bug reports and pull requests are welcome on GitHub at https://github.com/jtsymon/cpe23.
 
 ## License
 
