@@ -189,6 +189,7 @@ class Cpe23
 
   class << self
     def parse(str)
+      str = str.strip
       if str.start_with? 'wfn:'
         parse_wfn(str)
       elsif str.start_with? 'cpe:/'
